@@ -1,0 +1,20 @@
+# Notes
+
+# save packages to file
+pip list --format=freeze > requirements.dev.txt
+
+# Run locally
+uvicorn src.main:app --host 127.0.0.1 --port 80 --reload
+uvicorn src.main:app --host 0.0.0.0 --port 80 --workers 4
+uvicorn src.main:app --host 127.0.0.1 --port 80 --workers 4
+
+# Run prod
+waitress-serve --threads 4 --host=0.0.0.0 --port=80 src.main:app
+gunicorn src.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80 --reload
+
+# Prune
+docker image prune --force --filter="label=classy"
+# Docker build
+docker build -t classifier1:latest --label classy .
+# Run
+docker run -d --name mycontainer -p 80:80 classifier1:latest
