@@ -30,7 +30,7 @@ def predict() -> dict:
 def predict(input_data: DataInput) -> dict:
     if input_data.verbose:
         logger.info(f"Incoming request with data type {type(input_data)}")
-        logger.info(f"input_data:\n{input_data[:2]}")
+        logger.info(f"input_data:\n{input_data}")
     start_time = time.time()
     np_array = input_data.to_np_array()
     predictions = model.predict_proba(np_array)[:, 1]

@@ -32,4 +32,6 @@ EXPOSE 80
 # This command will be run from the current working directory, the same /code directory you set above with WORKDIR /code.
 # Because the program will be started at /code and inside of it is the directory ./app with your code, 
 #  Uvicorn will be able to see and import app from app.main.
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "80"]
+# CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["gunicorn", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker",\
+    "--bind", "0.0.0.0:80", "--max-requests", "1200", "--timeout", "10", "src.main:app"]

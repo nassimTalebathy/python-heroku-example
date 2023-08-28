@@ -1,1 +1,1 @@
-web: uvicorn src.main:app --host 0.0.0.0 --port=${PORT} --workers 4
+web: gunicorn ---worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0 --max-requests 1200 --timeout 10 src.main:app
