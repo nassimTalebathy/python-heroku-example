@@ -9,18 +9,22 @@ uvicorn src.main:app --host 0.0.0.0 --port 80 --workers 4
 uvicorn src.main:app --host 127.0.0.1 --port 80 --workers 4
 
 # procfile
-web: gunicorn -w 4 -k uvicorn.workers.UvicornWorker src.main:app --host 0.0.0.0 --port 80
+web: gunicorn -w 4 -k uvicorn.workers.UvicornWorker src.main:app --host 0.0.0.0 --port ${PORT}
+web: uvicorn src.main:app --host 0.0.0.0 --port=${PORT} --workers 4
+
 
 # heroku
 docker tag classifier1:latest registry.heroku.com/<app>/<process-type>
+# scale dynos to 0
+heroku ps:scale web=0
 
 # Run prod
 waitress-serve --threads 4 --host=0.0.0.0 --port=80 src.main:app
-gunicorn src.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80 --reload
+gunicorn src.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT} --reload
 
 # Prune
 docker image prune --force --filter="label=classy"
 # Docker build
 docker build -t classifier1:latest --label classy .
 # Run
-docker run -d --name mycontainer -p 80:80 classifier1:latest
+docker run -d --name mycontainer -p ${PORT}:${PORT} classifier1:latest
